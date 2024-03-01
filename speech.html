@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice to Text</title>
+</head>
+<body>
+    <button id="startButton">Start Voice Input</button>
+    <div id="output"></div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const outputDiv = document.getElementById('output');
+
+        // Check if SpeechRecognition is supported
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                startButton.textContent = 'Listening...';
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                outputDiv.textContent = transcript;
+            };
+
+            recognition.onend = () => {
+                startButton.textContent = 'Start Voice Input';
+            };
+
+            recognition.onerror = (event) => {
+                // Handle permission-related errors
+                if (event.error === 'no-speech') {
+                    startButton.textContent = 'No speech detected';
+                }
+                if (event.error === 'audio-capture') {
+                    startButton.textContent = 'Please ensure that microphone is connected';
+                }
+                if (event.error === 'not-allowed') {
+                    startButton.textContent = 'Permission to use microphone denied';
+                }
+            };
+
+            startButton.addEventListener('click', () => {
+                recognition.start();
+            });
+        } else {
+            // SpeechRecognition not supported
+            startButton.textContent = 'Speech recognition not supported';
+        }
+    </script>
+</body>
+</html>
